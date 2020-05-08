@@ -9,14 +9,25 @@ const Mutations = {
         }, info);
 
         return item;
+    },
+    updateItem(parent, args, ctx, info) {
+        const updates = { ...args };
+        delete updates.id;
+        return ctx.db.mutation.updateItem({
+            data: updates,
+            where: {
+                id: args.id
+            }
+        }, info)
+    },
+    async deleteItem(parent, args, ctx, info) {
+        const where = { id: args.id };
+        // 1.find item
+        const item = await ctx.db.query.item({ where }, `{id title}`);
+        // 2.cheeck if they own that item,or hava the persmissons
+        // 3. Delete it
+        return ctx.db.mutation.deleteItem({ where }, info);
     }
-    // createDog(parent, args, ctx, info) {
-    //     global.dogs = global.dogs || [];
-    //     // create a dog
-    //     const newDog = { name: args.name };
-    //     global.dogs.push(newDog);
-    //     return newDog;
-    // }
 };
 
 module.exports = Mutations;
